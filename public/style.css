@@ -1,0 +1,54 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+  padding: 40px;
+}
+
+h1 {
+  text-align: center;
+}
+
+form,
+.login-box,
+.dashboard {
+  max-width: 500px;
+  margin: 40px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+input,
+button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+button {
+  background: #111827;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #374151;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+td,
+th {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+img {
+  border-radius: 6px;
+}

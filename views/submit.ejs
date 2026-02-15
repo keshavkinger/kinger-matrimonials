@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kinger Matrimonials – Submit Biodata</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <h1>Submit Your Biodata</h1>
+
+  <form action="/api/submit" method="POST" enctype="multipart/form-data">
+    <input name="fullName" placeholder="Full Name" required />
+    <input name="age" type="number" required />
+    <input name="gender" placeholder="Gender" required />
+    <input name="religion" placeholder="Religion" required />
+    <input name="city" placeholder="City" required />
+<input name="email" placeholder="Email" required />
+
+    <label>Photo:</label>
+    <input type="file" name="photo" required />
+
+    <label>Biodata PDF:</label>
+    <input type="file" name="biodata" required />
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

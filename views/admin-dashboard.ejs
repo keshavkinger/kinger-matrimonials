@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <h1>📋 Matrimonial Submissions</h1>
+
+    <div class="top-bar">
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- 🔍 SEARCH + FILTER BAR -->
+    <div class="filters">
+      <input type="text" id="search" placeholder="Search name or city" />
+      <input type="number" id="minAge" placeholder="Min Age" />
+      <input type="number" id="maxAge" placeholder="Max Age" />
+      <button onclick="applyFilters()">Apply</button>
+      <button onclick="clearFilters()">Clear</button>
+    </div>
+
+    <!-- 📋 TABLE -->
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>City</th>
+          <th>Photo</th>
+          <th>Biodata</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="table"></tbody>
+    </table>
+
+    <!-- ⏩ PAGINATION -->
+    <div class="pagination">
+      <button onclick="prevPage()">⬅ Prev</button>
+      <span id="pageInfo"></span>
+      <button onclick="nextPage()">Next ➡</button>
+    </div>
+
+  </div>
+
+  <script>
+    let currentPage = 1;
+    let totalPages = 1;
+
+    async function loadData(query = "", page = 1) {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      let url = `/api/submissions?page=${page}`;
+      if (query) url += "&" + query;
+
+      const res = await fetch(url, {
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      const result = await res.json();
+
+      const table = document.getElementById("table");
+      table.innerHTML = "";
+
+      result.submissions.forEach((s) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${s.fullName}</td>
+          <td>${s.age}</td>
+          <td>${s.city}</td>
+          <td><img src="/${s.photo}" width="80"/></td>
+          <td><a href="/${s.biodata}" target="_blank">Download</a></td>
+          <td>${s.status || "Pending"}</td>
+          <td>
+            <button onclick="approve('${s._id}')">Approve</button>
+            <button onclick="reject('${s._id}')">Reject</button>
+            <button onclick="deleteEntry('${s._id}')">Delete</button>
+          </td>
+        `;
+
+        table.appendChild(row);
+      });
+
+      currentPage = result.page;
+      totalPages = result.pages;
+      document.getElementById("pageInfo").innerText =
+        `Page ${currentPage} of ${totalPages}`;
+    }
+
+    // ✅ APPROVE
+    async function approve(id) {
+      const token = localStorage.getItem("token");
+
+      await fetch(`/api/submissions/${id}/approve`, {
+        method: "PUT",
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      loadData("", currentPage);
+    }
+
+    // ❌ REJECT
+    async function reject(id) {
+      const token = localStorage.getItem("token");
+
+      await fetch(`/api/submissions/${id}/reject`, {
+        method: "PUT",
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      loadData("", currentPage);
+    }
+
+    // 🗑 DELETE
+    async function deleteEntry(id) {
+      if (!confirm("Delete this profile?")) return;
+
+      const token = localStorage.getItem("token");
+
+      await fetch(`/api/submissions/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      loadData("", currentPage);
+    }
+
+    // 🔍 FILTERS
+    function applyFilters() {
+      const search = document.getElementById("search").value;
+      const minAge = document.getElementById("minAge").value;
+      const maxAge = document.getElementById("maxAge").value;
+
+      let query = "";
+      if (search) query += `search=${search}&`;
+      if (minAge) query += `minAge=${minAge}&`;
+      if (maxAge) query += `maxAge=${maxAge}`;
+
+      currentPage = 1;
+      loadData(query, currentPage);
+    }
+
+    function clearFilters() {
+      document.getElementById("search").value = "";
+      document.getElementById("minAge").value = "";
+      document.getElementById("maxAge").value = "";
+      currentPage = 1;
+      loadData();
+    }
+
+    // ⏩ PAGINATION
+    function nextPage() {
+      if (currentPage < totalPages) loadData("", currentPage + 1);
+    }
+
+    function prevPage() {
+      if (currentPage > 1) loadData("", currentPage - 1);
+    }
+
+    // 🚪 LOGOUT
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "/admin/login";
+    }
+
+    // initial load
+    loadData();
+  </script>
+
+</body>
+</html>
