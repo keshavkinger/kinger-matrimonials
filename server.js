@@ -8,6 +8,14 @@ const adminAuthRoutes = require("./routes/adminAuthRoutes");
 const adminPageAuth = require("./middleware/adminPageAuth");
 
 const app = express();
+const fs = require("fs");
+
+// Ensure upload folders exist (for Render)
+["uploads", "uploads/photos", "uploads/biodata"].forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
 
 // ---------------- MIDDLEWARE ----------------
 
@@ -51,9 +59,10 @@ app.get("/admin/login", (req, res) => {
 });
 
 // 🔐 PROTECTED ADMIN PAGE
-app.get("/admin/dashboard", (req, res) => {
+app.get("/admin/dashboard", adminPageAuth, (req, res) => {
   res.render("admin-dashboard");
 });
+
 
 // ---------------- SERVER ----------------
 
