@@ -2,20 +2,21 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 const submissionRoutes = require("./routes/submissionRoutes");
 const adminAuthRoutes = require("./routes/adminAuthRoutes");
-const adminPageAuth = require("./middleware/adminPageAuth");
 
 const app = express();
-const fs = require("fs");
 
-// Ensure upload folders exist (for Render)
-["uploads", "uploads/photos", "uploads/biodata"].forEach(dir => {
+// ✅ Ensure upload folders exist (Render fix)
+["uploads", "uploads/photos", "uploads/biodata"].forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 });
+
 
 // ---------------- MIDDLEWARE ----------------
 
@@ -28,17 +29,20 @@ app.set("views", __dirname + "/views");
 app.use("/uploads", express.static("uploads"));
 app.use(express.static("public"));
 
+
 // ---------------- DB CONNECTION ----------------
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected ☁️"))
-  .catch((err) => console.log("DB Error:", err));
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.log("❌ DB Error:", err));
+
 
 // ---------------- API ROUTES ----------------
 
 app.use("/api", submissionRoutes);
 app.use("/api/admin", adminAuthRoutes);
+
 
 // ---------------- PAGE ROUTES ----------------
 
@@ -58,17 +62,29 @@ app.get("/admin/login", (req, res) => {
   res.render("admin-login");
 });
 
-// 🔐 PROTECTED ADMIN PAGE
-app.get("/admin/dashboard", adminPageAuth, (req, res) => {
-  res.render("admin-dashboard");
+
+// 🔐 PROTECTED ADMIN DASHBOARD (JWT in URL)
+app.get("/admin/dashboard", (req, res) => {
+  const token = req.query.token;
+
+  if (!token) {
+    return res.redirect("/admin/login");
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    res.render("admin-dashboard");
+  } catch (err) {
+    console.log("❌ Invalid token");
+    return res.redirect("/admin/login");
+  }
 });
 
 
 // ---------------- SERVER ----------------
 
-//const PORT = 3000;
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

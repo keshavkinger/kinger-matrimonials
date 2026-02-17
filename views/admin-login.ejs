@@ -17,23 +17,22 @@
 
 <script>
   async function login() {
-    console.log("LOGIN CLICKED"); // 👈 debug
-
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value,
+        username: username.value,
+        password: password.value,
       }),
     });
 
     const data = await res.json();
-    console.log("RESPONSE:", data);
 
     if (data.token) {
       localStorage.setItem("token", data.token);
-      window.location.href = "/admin/dashboard";
+
+      // ✅ Pass token in URL
+      window.location.href = "/admin/dashboard?token=" + data.token;
     } else {
       alert("Login failed");
     }
