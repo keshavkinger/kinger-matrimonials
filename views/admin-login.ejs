@@ -15,27 +15,27 @@
     <button onclick="login()">Login</button>
   </div>
 
-  <script>
-    async function login() {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: username.value,
-          password: password.value,
-        }),
-      });
+<script>
+  async function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-      const data = await res.json();
+    const res = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/admin/dashboard";
-      } else {
-        alert("Login failed");
-      }
+    const data = await res.json();
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "/admin/dashboard";
+    } else {
+      alert("Login failed");
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>
