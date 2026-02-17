@@ -17,16 +17,19 @@
 
 <script>
   async function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    console.log("LOGIN CLICKED"); // 👈 debug
 
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+      }),
     });
 
     const data = await res.json();
+    console.log("RESPONSE:", data);
 
     if (data.token) {
       localStorage.setItem("token", data.token);
