@@ -40,24 +40,25 @@ router.post(
     try {
       const newSubmission = new Submission({
         fullName: req.body.fullName,
-        email: req.body.email, 
+        email: req.body.email,
         age: req.body.age,
         gender: req.body.gender,
         religion: req.body.religion,
         city: req.body.city,
         photo: req.files.photo[0].path,
         biodata: req.files.biodata[0].path,
-        // status auto defaults to Pending
       });
 
       await newSubmission.save();
-console.log("✅ Submission saved. Sending email...");
-await sendNewSubmissionEmail(newSubmission);
+      console.log("✅ Submission saved");
 
-      // 📧 Send email alert
-      await sendNewSubmissionEmail(newSubmission);
-
+      // ✅ Respond immediately (DO NOT WAIT FOR EMAIL)
       res.redirect("/success");
+
+      // 📧 Send email in background
+      sendNewSubmissionEmail(newSubmission)
+        .then(() => console.log("📧 Email sent"))
+        .catch(err => console.log("❌ Email failed:", err.message));
 
     } catch (error) {
       console.error(error);
@@ -65,6 +66,7 @@ await sendNewSubmissionEmail(newSubmission);
     }
   }
 );
+
 
 
 // ---------------- GET SUBMISSIONS (FILTER + PAGINATION) ----------------
