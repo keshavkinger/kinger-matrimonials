@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="markTitle markDesc">
+  <title id="markTitle">Kinger Matrimonials monogram</title>
+  <desc id="markDesc">A gold KM monogram for Kinger Matrimonials.</desc>
+  <defs>
+    <linearGradient id="monogramGold" x1="136" y1="98" x2="372" y2="384" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7CB81"/>
+      <stop offset="0.48" stop-color="#CFA74F"/>
+      <stop offset="1" stop-color="#B8892D"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="#FFFAF4"/>
+
+  <path d="M165 399L201 123H247L231 211L323 123H383L281 223L362 399H307L239 278L218 399H165Z" fill="url(#monogramGold)"/>
+  <path d="M111 399L168 123H214L186 267L271 194H325L301 234L218 300L200 399H111Z" fill="url(#monogramGold)" fill-opacity="0.92"/>
+  <path d="M207 368L257 137H300L271 260L362 368H310L258 316L244 368H207Z" fill="url(#monogramGold)" fill-opacity="0.84"/>
+</svg>

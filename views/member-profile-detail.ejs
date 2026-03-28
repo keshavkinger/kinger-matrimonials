@@ -7,12 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body class="theme-shell">
   <div class="page-shell private-page">
     <nav class="site-nav compact-nav member-nav">
-      <a class="brand" href="/">Kinger Matrimonials</a>
+      <a class="brand" href="/" aria-label="Kinger Matrimonials home">
+        <img class="brand-mark" src="/logo-mark.svg" alt="Kinger Matrimonials logo" />
+        <img class="brand-wordmark" src="/logo-wordmark.svg" alt="Kinger Matrimonials" />
+      </a>
       <div class="nav-links">
         <a href="/member/dashboard?token=<%= token %>">My Dashboard</a>
         <a href="/profiles?token=<%= token %>">Approved Profiles</a>
