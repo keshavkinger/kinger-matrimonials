@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gun Milan | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-shell">
+  <div class="page-shell private-page">
+    <nav class="site-nav compact-nav">
+      <a class="brand" href="/">Kinger Matrimonials</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/submit">Submit Biodata</a>
+      </div>
+    </nav>
+
+    <section class="member-hero">
+      <div class="member-hero-copy">
+        <p class="eyebrow">Gun Milan</p>
+        <h1>Check marriage compatibility in a proper kundli-style flow.</h1>
+        <p>
+          Enter boy and girl birth details first, just like users normally expect. For the current instant result,
+          also choose the known `Rashi` and `Nakshatra` so we can show a quick 36-point compatibility estimate.
+        </p>
+      </div>
+      <div class="member-note">
+        <h3>Important note</h3>
+        <p>
+          This page is now structured for full kundli-style matching. At the moment, instant results still use
+          manually selected moon sign and nakshatra, while date, time, and place are captured for a future full engine.
+        </p>
+      </div>
+    </section>
+
+    <section class="guna-shell">
+      <form class="modern-form" id="gunaForm">
+        <div class="guna-grid">
+          <section class="guna-panel">
+            <p class="section-kicker">Enter Boy's Details</p>
+            <label><span>Name</span><input name="boyName" placeholder="Boy name" required /></label>
+            <div class="kundli-inline-grid">
+              <label>
+                <span>Date of Birth</span>
+                <input name="boyDob" type="date" required />
+              </label>
+              <label>
+                <span>Time of Birth</span>
+                <input name="boyTime" type="time" required />
+              </label>
+            </div>
+            <label><span>Place of Birth</span><input name="boyPlace" placeholder="City, State, Country" required /></label>
+            <p class="guna-helper">If known, you can also choose Rashi and Nakshatra for an instant quick result. Otherwise, you can leave them blank.</p>
+            <label>
+              <span>Rashi</span>
+              <select name="boyRashi"></select>
+            </label>
+            <label>
+              <span>Nakshatra</span>
+              <select name="boyNakshatra"></select>
+            </label>
+          </section>
+
+          <section class="guna-panel">
+            <p class="section-kicker">Enter Girl's Details</p>
+            <label><span>Name</span><input name="girlName" placeholder="Girl name" required /></label>
+            <div class="kundli-inline-grid">
+              <label>
+                <span>Date of Birth</span>
+                <input name="girlDob" type="date" required />
+              </label>
+              <label>
+                <span>Time of Birth</span>
+                <input name="girlTime" type="time" required />
+              </label>
+            </div>
+            <label><span>Place of Birth</span><input name="girlPlace" placeholder="City, State, Country" required /></label>
+            <p class="guna-helper">If known, you can also choose Rashi and Nakshatra for an instant quick result. Otherwise, you can leave them blank.</p>
+            <label>
+              <span>Rashi</span>
+              <select name="girlRashi"></select>
+            </label>
+            <label>
+              <span>Nakshatra</span>
+              <select name="girlNakshatra"></select>
+            </label>
+          </section>
+        </div>
+
+        <div class="hero-actions">
+          <button type="submit" class="primary-button">Calculate Gun Milan</button>
+        </div>
+      </form>
+
+      <section class="guna-results" id="gunaResults" hidden>
+        <div class="analytics-grid guna-score-grid">
+          <article class="stat-card"><span class="stat-label">Total Score</span><strong id="totalScore">0/36</strong></article>
+          <article class="stat-card"><span class="stat-label">Verdict</span><strong id="verdictText">-</strong></article>
+          <article class="stat-card"><span class="stat-label">Nadi</span><strong id="nadiFlag">-</strong></article>
+          <article class="stat-card"><span class="stat-label">Bhakoot</span><strong id="bhakootFlag">-</strong></article>
+        </div>
+
+        <section class="member-dashboard-grid">
+          <article class="info-card">
+            <p class="section-kicker">Compatibility Summary</p>
+            <h2 id="pairTitle">Result</h2>
+            <p id="pairSummary" class="muted-text"></p>
+            <p id="pairAdvice" class="profile-requirements"></p>
+          </article>
+
+          <article class="info-card">
+            <p class="section-kicker">Koot Breakdown</p>
+            <h2>8-point review</h2>
+            <div class="guna-breakdown" id="gunaBreakdown"></div>
+          </article>
+        </section>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const rashis = [
+      "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
+      "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
+    ];
+
+    const nakshatras = [
+      "Ashwini","Bharani","Krittika","Rohini","Mrigashira","Ardra","Punarvasu","Pushya","Ashlesha",
+      "Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha",
+      "Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishta","Shatabhisha","Purva Bhadrapada",
+      "Uttara Bhadrapada","Revati"
+    ];
+
+    const nakshatraMeta = {
+      "Ashwini": { gana: "Deva", yoni: "Horse" },
+      "Bharani": { gana: "Manushya", yoni: "Elephant" },
+      "Krittika": { gana: "Rakshasa", yoni: "Sheep" },
+      "Rohini": { gana: "Manushya", yoni: "Serpent" },
+      "Mrigashira": { gana: "Deva", yoni: "Serpent" },
+      "Ardra": { gana: "Manushya", yoni: "Dog" },
+      "Punarvasu": { gana: "Deva", yoni: "Cat" },
+      "Pushya": { gana: "Deva", yoni: "Sheep" },
+      "Ashlesha": { gana: "Rakshasa", yoni: "Cat" },
+      "Magha": { gana: "Rakshasa", yoni: "Rat" },
+      "Purva Phalguni": { gana: "Manushya", yoni: "Rat" },
+      "Uttara Phalguni": { gana: "Manushya", yoni: "Cow" },
+      "Hasta": { gana: "Deva", yoni: "Buffalo" },
+      "Chitra": { gana: "Rakshasa", yoni: "Tiger" },
+      "Swati": { gana: "Deva", yoni: "Buffalo" },
+      "Vishakha": { gana: "Rakshasa", yoni: "Tiger" },
+      "Anuradha": { gana: "Deva", yoni: "Deer" },
+      "Jyeshtha": { gana: "Rakshasa", yoni: "Deer" },
+      "Mula": { gana: "Rakshasa", yoni: "Dog" },
+      "Purva Ashadha": { gana: "Manushya", yoni: "Monkey" },
+      "Uttara Ashadha": { gana: "Manushya", yoni: "Mongoose" },
+      "Shravana": { gana: "Deva", yoni: "Monkey" },
+      "Dhanishta": { gana: "Rakshasa", yoni: "Lion" },
+      "Shatabhisha": { gana: "Rakshasa", yoni: "Horse" },
+      "Purva Bhadrapada": { gana: "Manushya", yoni: "Lion" },
+      "Uttara Bhadrapada": { gana: "Manushya", yoni: "Cow" },
+      "Revati": { gana: "Deva", yoni: "Elephant" }
+    };
+
+    const rashiMeta = {
+      "Aries": { varna: "Kshatriya", vashya: "Quadruped", lord: "Mars" },
+      "Taurus": { varna: "Vaishya", vashya: "Quadruped", lord: "Venus" },
+      "Gemini": { varna: "Shudra", vashya: "Human", lord: "Mercury" },
+      "Cancer": { varna: "Brahmin", vashya: "Water", lord: "Moon" },
+      "Leo": { varna: "Kshatriya", vashya: "Wild", lord: "Sun" },
+      "Virgo": { varna: "Vaishya", vashya: "Human", lord: "Mercury" },
+      "Libra": { varna: "Shudra", vashya: "Human", lord: "Venus" },
+      "Scorpio": { varna: "Brahmin", vashya: "Insect", lord: "Mars" },
+      "Sagittarius": { varna: "Kshatriya", vashya: "Wild", lord: "Jupiter" },
+      "Capricorn": { varna: "Vaishya", vashya: "Quadruped", lord: "Saturn" },
+      "Aquarius": { varna: "Shudra", vashya: "Human", lord: "Saturn" },
+      "Pisces": { varna: "Brahmin", vashya: "Water", lord: "Jupiter" }
+    };
+
+    const varnaRank = { "Shudra": 1, "Vaishya": 2, "Kshatriya": 3, "Brahmin": 4 };
+    const nadiCycle = ["Adi", "Madhya", "Antya"];
+    const yoniEnemies = {
+      "Horse": ["Buffalo"],
+      "Elephant": ["Lion"],
+      "Sheep": ["Monkey"],
+      "Serpent": ["Mongoose"],
+      "Dog": ["Deer"],
+      "Cat": ["Rat"],
+      "Rat": ["Cat"],
+      "Cow": ["Tiger"],
+      "Buffalo": ["Horse"],
+      "Tiger": ["Cow"],
+      "Deer": ["Dog"],
+      "Monkey": ["Sheep"],
+      "Mongoose": ["Serpent"],
+      "Lion": ["Elephant"]
+    };
+
+    const planetFriendships = {
+      "Sun": { friends: ["Moon","Mars","Jupiter"], neutrals: ["Mercury"], enemies: ["Venus","Saturn"] },
+      "Moon": { friends: ["Sun","Mercury"], neutrals: ["Mars","Jupiter","Venus","Saturn"], enemies: [] },
+      "Mars": { friends: ["Sun","Moon","Jupiter"], neutrals: ["Venus","Saturn"], enemies: ["Mercury"] },
+      "Mercury": { friends: ["Sun","Venus"], neutrals: ["Mars","Jupiter","Saturn"], enemies: ["Moon"] },
+      "Jupiter": { friends: ["Sun","Moon","Mars"], neutrals: ["Saturn"], enemies: ["Mercury","Venus"] },
+      "Venus": { friends: ["Mercury","Saturn"], neutrals: ["Mars","Jupiter"], enemies: ["Sun","Moon"] },
+      "Saturn": { friends: ["Mercury","Venus"], neutrals: ["Jupiter"], enemies: ["Sun","Moon","Mars"] }
+    };
+
+    const compatibleVashyaPairs = new Set([
+      "Quadruped-Human","Human-Quadruped","Water-Quadruped","Quadruped-Water",
+      "Human-Wild","Wild-Human","Insect-Water","Water-Insect"
+    ]);
+
+    function fillOptions(name, values) {
+      const selectNodes = document.querySelectorAll(`[name="${name}"]`);
+      selectNodes.forEach((select) => {
+        select.innerHTML = `<option value="">Select ${name.includes("Rashi") ? "Rashi" : "Nakshatra"}</option>` +
+          values.map((value) => `<option value="${value}">${value}</option>`).join("");
+      });
+    }
+
+    function getNadi(nakshatra) {
+      const index = nakshatras.indexOf(nakshatra);
+      return nadiCycle[index % 3];
+    }
+
+    function getTaraScore(boyNakshatra, girlNakshatra) {
+      const boyIndex = nakshatras.indexOf(boyNakshatra);
+      const girlIndex = nakshatras.indexOf(girlNakshatra);
+      const countA = ((girlIndex - boyIndex + 27) % 27) + 1;
+      const countB = ((boyIndex - girlIndex + 27) % 27) + 1;
+      const isGood = (value) => {
+        const remainder = value % 9;
+        return ![3,5,7].includes(remainder);
+      };
+      const goodA = isGood(countA);
+      const goodB = isGood(countB);
+      if (goodA && goodB) return 3;
+      if (goodA || goodB) return 1.5;
+      return 0;
+    }
+
+    function getYoniScore(boyNakshatra, girlNakshatra) {
+      const boyYoni = nakshatraMeta[boyNakshatra].yoni;
+      const girlYoni = nakshatraMeta[girlNakshatra].yoni;
+      if (boyYoni === girlYoni) return 4;
+      if ((yoniEnemies[boyYoni] || []).includes(girlYoni)) return 0;
+      return 2;
+    }
+
+    function getVarnaScore(boyRashi, girlRashi) {
+      return varnaRank[rashiMeta[boyRashi].varna] >= varnaRank[rashiMeta[girlRashi].varna] ? 1 : 0;
+    }
+
+    function getVashyaScore(boyRashi, girlRashi) {
+      const pair = `${rashiMeta[boyRashi].vashya}-${rashiMeta[girlRashi].vashya}`;
+      if (rashiMeta[boyRashi].vashya === rashiMeta[girlRashi].vashya) return 2;
+      return compatibleVashyaPairs.has(pair) ? 1 : 0;
+    }
+
+    function getGrahaMaitriScore(boyRashi, girlRashi) {
+      const boyLord = rashiMeta[boyRashi].lord;
+      const girlLord = rashiMeta[girlRashi].lord;
+      if (boyLord === girlLord) return 5;
+      const boyView = planetFriendships[boyLord];
+      const girlView = planetFriendships[girlLord];
+      const boyFriend = boyView.friends.includes(girlLord);
+      const girlFriend = girlView.friends.includes(boyLord);
+      const boyEnemy = boyView.enemies.includes(girlLord);
+      const girlEnemy = girlView.enemies.includes(boyLord);
+      if (boyFriend && girlFriend) return 5;
+      if ((boyFriend && !girlEnemy) || (girlFriend && !boyEnemy)) return 4;
+      if (!boyEnemy && !girlEnemy) return 3;
+      if (boyEnemy && girlEnemy) return 0;
+      return 1;
+    }
+
+    function getGanaScore(boyNakshatra, girlNakshatra) {
+      const boyGana = nakshatraMeta[boyNakshatra].gana;
+      const girlGana = nakshatraMeta[girlNakshatra].gana;
+      if (boyGana === girlGana) return 6;
+      if ([boyGana, girlGana].includes("Rakshasa") && [boyGana, girlGana].includes("Deva")) return 0;
+      if ([boyGana, girlGana].includes("Rakshasa") && [boyGana, girlGana].includes("Manushya")) return 1;
+      return 5;
+    }
+
+    function getBhakootScore(boyRashi, girlRashi) {
+      const boyIndex = rashis.indexOf(boyRashi);
+      const girlIndex = rashis.indexOf(girlRashi);
+      const difference = Math.abs(boyIndex - girlIndex);
+      return [1,4,5,7,8,11].includes(difference) ? 0 : 7;
+    }
+
+    function getNadiScore(boyNakshatra, girlNakshatra) {
+      return getNadi(boyNakshatra) === getNadi(girlNakshatra) ? 0 : 8;
+    }
+
+    function verdictFromScore(score) {
+      if (score >= 28) return "Excellent";
+      if (score >= 22) return "Strong";
+      if (score >= 18) return "Average";
+      return "Needs Care";
+    }
+
+    function adviceFromResult(total, nadiScore, bhakootScore) {
+      if (nadiScore === 0 && bhakootScore === 0) {
+        return "Both Nadi and Bhakoot need attention in this match. A detailed astrologer review is strongly recommended.";
+      }
+      if (nadiScore === 0) {
+        return "Overall score may still be workable, but Nadi matching is weak. A detailed kundli review is recommended.";
+      }
+      if (bhakootScore === 0) {
+        return "Bhakoot matching is weak here. Consider a deeper horoscope consultation before relying on the score alone.";
+      }
+      if (total >= 28) {
+        return "This looks like a traditionally strong match in a quick Gun Milan reading.";
+      }
+      if (total >= 22) {
+        return "This is a healthy traditional score with mostly supportive factors.";
+      }
+      if (total >= 18) {
+        return "This is a mid-range score. It may still be workable, but the weaker areas should be reviewed carefully.";
+      }
+      return "This quick estimate suggests caution. A full horoscope review is advisable before taking the result seriously.";
+    }
+
+    function renderResult(result, boyName, girlName) {
+      document.getElementById("gunaResults").hidden = false;
+      document.getElementById("totalScore").innerText = `${result.total}/36`;
+      document.getElementById("verdictText").innerText = result.verdict;
+      document.getElementById("nadiFlag").innerText = result.nadiScore === 0 ? "Needs Review" : "Supportive";
+      document.getElementById("bhakootFlag").innerText = result.bhakootScore === 0 ? "Needs Review" : "Supportive";
+      document.getElementById("pairTitle").innerText = `${boyName} and ${girlName}`;
+      document.getElementById("pairSummary").innerText = `This quick Gun Milan estimate gives ${result.total} out of 36 points with a ${result.verdict.toLowerCase()} traditional compatibility reading.`;
+      document.getElementById("pairAdvice").innerText = result.advice;
+
+      const rows = [
+        ["Varna", result.varna, "1"],
+        ["Vashya", result.vashya, "2"],
+        ["Tara", result.tara, "3"],
+        ["Yoni", result.yoni, "4"],
+        ["Graha Maitri", result.grahaMaitri, "5"],
+        ["Gana", result.gana, "6"],
+        ["Bhakoot", result.bhakoot, "7"],
+        ["Nadi", result.nadi, "8"]
+      ];
+
+      document.getElementById("gunaBreakdown").innerHTML = rows.map(([label, score, max]) => `
+        <div class="guna-row">
+          <strong>${label}</strong>
+          <span>${score} / ${max}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderPendingResult(boyName, girlName) {
+      document.getElementById("gunaResults").hidden = false;
+      document.getElementById("totalScore").innerText = "Pending";
+      document.getElementById("verdictText").innerText = "Birth Data Saved";
+      document.getElementById("nadiFlag").innerText = "Awaiting Auto Calc";
+      document.getElementById("bhakootFlag").innerText = "Awaiting Auto Calc";
+      document.getElementById("pairTitle").innerText = `${boyName} and ${girlName}`;
+      document.getElementById("pairSummary").innerText =
+        "You entered birth date, time, and place, but skipped Rashi and Nakshatra. The form is valid, but full automatic Gun Milan calculation needs the astrology engine layer.";
+      document.getElementById("pairAdvice").innerText =
+        "For now, add Rashi and Nakshatra if you want an instant result. Otherwise this page is ready for future automatic kundli-based matching.";
+      document.getElementById("gunaBreakdown").innerHTML = `
+        <div class="guna-row">
+          <strong>Current status</strong>
+          <span>Quick manual score skipped</span>
+        </div>
+      `;
+    }
+
+    function calculateGunMilan(formData) {
+      const varna = getVarnaScore(formData.boyRashi, formData.girlRashi);
+      const vashya = getVashyaScore(formData.boyRashi, formData.girlRashi);
+      const tara = getTaraScore(formData.boyNakshatra, formData.girlNakshatra);
+      const yoni = getYoniScore(formData.boyNakshatra, formData.girlNakshatra);
+      const grahaMaitri = getGrahaMaitriScore(formData.boyRashi, formData.girlRashi);
+      const gana = getGanaScore(formData.boyNakshatra, formData.girlNakshatra);
+      const bhakoot = getBhakootScore(formData.boyRashi, formData.girlRashi);
+      const nadi = getNadiScore(formData.boyNakshatra, formData.girlNakshatra);
+      const total = varna + vashya + tara + yoni + grahaMaitri + gana + bhakoot + nadi;
+
+      return {
+        varna,
+        vashya,
+        tara,
+        yoni,
+        grahaMaitri,
+        gana,
+        bhakoot,
+        nadi,
+        bhakootScore: bhakoot,
+        nadiScore: nadi,
+        total: Number(total.toFixed(1)),
+        verdict: verdictFromScore(total),
+        advice: adviceFromResult(total, nadi, bhakoot)
+      };
+    }
+
+    fillOptions("boyRashi", rashis);
+    fillOptions("girlRashi", rashis);
+    fillOptions("boyNakshatra", nakshatras);
+    fillOptions("girlNakshatra", nakshatras);
+
+    document.getElementById("gunaForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const values = Object.fromEntries(new FormData(event.target).entries());
+
+      if (
+        !values.boyRashi ||
+        !values.boyNakshatra ||
+        !values.girlRashi ||
+        !values.girlNakshatra
+      ) {
+        renderPendingResult(values.boyName, values.girlName);
+        document.getElementById("gunaResults").scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
+      const result = calculateGunMilan(values);
+      renderResult(result, values.boyName, values.girlName);
+      document.getElementById("gunaResults").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  </script>
+</body>
+</html>

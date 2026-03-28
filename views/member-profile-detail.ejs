@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= profile.fullName %> | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-shell">
+  <div class="page-shell private-page">
+    <nav class="site-nav compact-nav member-nav">
+      <a class="brand" href="/">Kinger Matrimonials</a>
+      <div class="nav-links">
+        <a href="/member/dashboard?token=<%= token %>">My Dashboard</a>
+        <a href="/profiles?token=<%= token %>">Approved Profiles</a>
+      </div>
+    </nav>
+
+    <section class="profile-detail-shell">
+      <article class="profile-detail-card">
+        <div class="profile-detail-main-photo">
+          <img src="/<%= profile.photo %>" alt="<%= profile.fullName %>" />
+        </div>
+        <div class="profile-detail-copy">
+          <div class="profile-badges">
+            <span class="status-pill approved">Approved</span>
+            <% if (profile.biodata && profile.photos && profile.photos.length) { %>
+              <span class="status-pill verified">Verified</span>
+            <% } %>
+          </div>
+          <h1><%= profile.fullName %></h1>
+          <p class="muted-text"><%= profile.age %> years · <%= profile.height || "Height not added" %> · <%= profile.gender %></p>
+          <p class="muted-text"><%= profile.religion %> · <%= profile.motherTongue || "Language not added" %> · <%= profile.city %></p>
+          <div class="hero-actions">
+            <button type="button" class="secondary-button" id="shortlistButton"><%= isShortlisted ? "Saved" : "Save Profile" %></button>
+            <button type="button" class="ghost-button" id="interestButton"><%= hasExpressedInterest ? "Interest Sent" : "Express Interest" %></button>
+            <button type="button" class="ghost-button" id="revealButton"><%= hasRequestedReveal ? "Reveal Requested" : "Request Contact Reveal" %></button>
+          </div>
+          <p id="detailActionMessage" class="muted-text"></p>
+        </div>
+      </article>
+
+      <section class="member-dashboard-grid">
+        <article class="info-card">
+          <p class="section-kicker">Profile Details</p>
+          <h2>About this member</h2>
+          <div class="member-detail-list">
+            <div><strong>Education</strong><span><%= profile.education || "Not mentioned" %></span></div>
+            <div><strong>Occupation</strong><span><%= profile.occupation || "Not mentioned" %></span></div>
+            <div><strong>Income</strong><span><%= profile.income || "Not mentioned" %></span></div>
+            <div><strong>Marital Status</strong><span><%= profile.maritalStatus || "Not mentioned" %></span></div>
+            <div><strong>Family Type</strong><span><%= profile.familyType || "Not mentioned" %></span></div>
+            <div><strong>Contact Preference</strong><span><%= profile.contactPreference || "Not mentioned" %></span></div>
+          </div>
+        </article>
+
+        <article class="info-card">
+          <p class="section-kicker">Partner Requirements</p>
+          <h2>Looking for</h2>
+          <p class="profile-requirements"><%= profile.requirements || "No requirements shared yet" %></p>
+        </article>
+      </section>
+
+      <section class="member-gallery-card">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Photo Gallery</p>
+            <h2>Submitted photos</h2>
+          </div>
+        </div>
+        <div class="member-photo-strip">
+          <% (profile.photos && profile.photos.length ? profile.photos : [profile.photo]).forEach((photo) => { %>
+            <div class="member-photo-tile">
+              <img src="/<%= photo %>" alt="<%= profile.fullName %>" />
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const memberToken = "<%= token %>";
+    const profileId = "<%= profile._id %>";
+    const actionMessage = document.getElementById("detailActionMessage");
+
+    async function doMemberAction(url, button, text) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + memberToken,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        button.innerText = text;
+      }
+      actionMessage.innerText = data.message || data.error || "Try again";
+    }
+
+    document.getElementById("shortlistButton").addEventListener("click", async (event) => {
+      const res = await fetch(`/api/member/shortlists/${profileId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + memberToken,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        event.target.innerText = data.saved ? "Saved" : "Save Profile";
+      }
+      actionMessage.innerText = data.message || data.error || "Try again";
+    });
+
+    document.getElementById("interestButton").addEventListener("click", (event) =>
+      doMemberAction(`/api/member/interests/${profileId}`, event.target, "Interest Sent")
+    );
+
+    document.getElementById("revealButton").addEventListener("click", (event) =>
+      doMemberAction(
+        `/api/member/contact-reveals/${profileId}`,
+        event.target,
+        "Reveal Requested"
+      )
+    );
+  </script>
+</body>
+</html>

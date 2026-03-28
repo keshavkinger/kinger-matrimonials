@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Approved Profiles | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-shell">
+  <div class="page-shell private-page">
+    <nav class="site-nav compact-nav member-nav">
+      <a class="brand" href="/">Kinger Matrimonials</a>
+      <div class="nav-links">
+        <a href="/member/dashboard?token=<%= token %>">My Dashboard</a>
+        <a href="/">Home</a>
+        <button type="button" class="ghost-button" onclick="memberLogout()">Logout</button>
+      </div>
+    </nav>
+
+    <% if (allowed) { %>
+      <section class="member-hero">
+        <div class="member-hero-copy">
+          <p class="eyebrow">Private Access</p>
+          <h1>Approved profiles for verified members</h1>
+          <p>
+            Your profile has been approved, so you can now browse other approved entries in a private member space.
+            Each profile shown here has already passed admin review.
+          </p>
+        </div>
+
+        <div class="member-note">
+          <h3>Member access</h3>
+          <p>Sign in with your approved email and password anytime. Use filters below to narrow profiles by name, city, or religion.</p>
+        </div>
+      </section>
+
+      <section class="filters elevated-card member-filters">
+        <div class="filter-grid member-filter-grid">
+          <input type="text" id="memberSearch" placeholder="Search by name or city" />
+          <input type="text" id="memberReligion" placeholder="Filter by religion" />
+          <input type="text" id="memberCity" placeholder="Filter by city" />
+          <input type="text" id="memberOccupation" placeholder="Filter by occupation" />
+        </div>
+      </section>
+
+      <section class="member-grid">
+        <% if (profiles.length) { %>
+          <% profiles.forEach((profile) => { %>
+            <article
+              class="profile-card member-card"
+              data-name="<%= profile.fullName.toLowerCase() %>"
+              data-city="<%= profile.city.toLowerCase() %>"
+              data-religion="<%= profile.religion.toLowerCase() %>"
+              data-occupation="<%= (profile.occupation || '').toLowerCase() %>"
+            >
+              <div class="profile-image-wrap">
+                <img src="/<%= profile.photo %>" alt="<%= profile.fullName %>" />
+              </div>
+              <div class="profile-body">
+                <div class="profile-topline">
+                  <h3><%= profile.fullName %></h3>
+                  <div class="profile-badges">
+                    <span class="status-pill approved">Approved</span>
+                    <% if (profile.biodata && profile.photos && profile.photos.length) { %>
+                      <span class="status-pill verified">Verified</span>
+                    <% } %>
+                  </div>
+                </div>
+                <p><%= profile.age %> years · <%= profile.gender %></p>
+                <p><%= profile.height || "Height not added" %> · <%= profile.religion %> · <%= profile.city %></p>
+                <p><strong>Education:</strong> <%= profile.education || "Not mentioned" %></p>
+                <p><strong>Occupation:</strong> <%= profile.occupation || "Not mentioned" %></p>
+                <p><strong>Income:</strong> <%= profile.income || "Not mentioned" %></p>
+                <p class="profile-requirements"><strong>Looking for:</strong> <%= profile.requirements || "No requirements shared yet" %></p>
+                <% if (profile.photos && profile.photos.length > 1) { %>
+                  <div class="mini-photo-strip">
+                    <% profile.photos.slice(0, 4).forEach((photo) => { %>
+                      <img src="/<%= photo %>" alt="<%= profile.fullName %>" />
+                    <% }) %>
+                  </div>
+                <% } %>
+                <div class="profile-actions stacked-actions">
+                  <a href="/profiles/<%= profile._id %>?token=<%= token %>" class="primary-button">View Details</a>
+                  <button
+                    type="button"
+                    class="secondary-button shortlist-button"
+                    data-profile-id="<%= profile._id %>"
+                  >
+                    <%= shortlistedIds.includes(String(profile._id)) ? "Saved" : "Save Profile" %>
+                  </button>
+                  <button
+                    type="button"
+                    class="ghost-button interest-button"
+                    data-profile-id="<%= profile._id %>"
+                  >
+                    Express Interest
+                  </button>
+                  <button
+                    type="button"
+                    class="ghost-button reveal-button"
+                    data-profile-id="<%= profile._id %>"
+                  >
+                    Request Contact Reveal
+                  </button>
+                </div>
+                <div class="profile-actions">
+                  <a href="/<%= profile.biodata %>" target="_blank" class="text-link">View biodata PDF</a>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+        <% } else { %>
+          <div class="empty-card">
+            <h3>No approved profiles yet</h3>
+            <p>Once more profiles are approved, they will appear here automatically.</p>
+          </div>
+        <% } %>
+      </section>
+    <% } else { %>
+      <section class="success-card private-lock-card">
+        <div class="success-badge">Private Profiles</div>
+        <h1>This section opens only for approved members who sign in.</h1>
+        <p>
+          Public visitors cannot see approved profiles. Once your own submission is approved,
+          we email you a password setup link so you can log in and access this page privately.
+        </p>
+        <div class="hero-actions">
+          <a href="/submit" class="primary-button">Submit Your Profile</a>
+          <a href="/member/login" class="secondary-button">Member Login</a>
+        </div>
+      </section>
+    <% } %>
+  </div>
+
+  <script>
+    function memberLogout() {
+      localStorage.removeItem("memberToken");
+      window.location.href = "/member/login";
+    }
+
+    const memberSearch = document.getElementById("memberSearch");
+    const memberReligion = document.getElementById("memberReligion");
+    const memberCity = document.getElementById("memberCity");
+    const memberOccupation = document.getElementById("memberOccupation");
+    const memberToken = "<%= token %>";
+
+    function filterProfiles() {
+      const cards = document.querySelectorAll(".member-card");
+      const searchValue = (memberSearch?.value || "").trim().toLowerCase();
+      const religionValue = (memberReligion?.value || "").trim().toLowerCase();
+      const cityValue = (memberCity?.value || "").trim().toLowerCase();
+      const occupationValue = (memberOccupation?.value || "").trim().toLowerCase();
+
+      cards.forEach((card) => {
+        const name = card.dataset.name || "";
+        const city = card.dataset.city || "";
+        const religion = card.dataset.religion || "";
+        const occupation = card.dataset.occupation || "";
+
+        const searchMatch =
+          !searchValue || name.includes(searchValue) || city.includes(searchValue);
+        const religionMatch = !religionValue || religion.includes(religionValue);
+        const cityMatch = !cityValue || city.includes(cityValue);
+        const occupationMatch = !occupationValue || occupation.includes(occupationValue);
+
+        card.style.display =
+          searchMatch && religionMatch && cityMatch && occupationMatch ? "" : "none";
+      });
+    }
+
+    async function memberAction(url, button, successText) {
+      button.disabled = true;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + memberToken,
+        },
+      });
+
+      const data = await res.json();
+      button.innerText = res.ok ? successText : data.error || "Try again";
+
+      if (!res.ok) {
+        setTimeout(() => {
+          button.disabled = false;
+        }, 1200);
+        return;
+      }
+
+      button.disabled = false;
+    }
+
+    document.querySelectorAll(".shortlist-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const res = await fetch(`/api/member/shortlists/${button.dataset.profileId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + memberToken,
+          },
+        });
+        const data = await res.json();
+        button.innerText = res.ok ? (data.saved ? "Saved" : "Save Profile") : data.error;
+      });
+    });
+
+    document.querySelectorAll(".interest-button").forEach((button) => {
+      button.addEventListener("click", () =>
+        memberAction(
+          `/api/member/interests/${button.dataset.profileId}`,
+          button,
+          "Interest Sent"
+        )
+      );
+    });
+
+    document.querySelectorAll(".reveal-button").forEach((button) => {
+      button.addEventListener("click", () =>
+        memberAction(
+          `/api/member/contact-reveals/${button.dataset.profileId}`,
+          button,
+          "Reveal Requested"
+        )
+      );
+    });
+
+    memberSearch?.addEventListener("input", filterProfiles);
+    memberReligion?.addEventListener("input", filterProfiles);
+    memberCity?.addEventListener("input", filterProfiles);
+    memberOccupation?.addEventListener("input", filterProfiles);
+  </script>
+</body>
+</html>

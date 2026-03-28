@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-shell">
+  <div class="page-shell private-page">
+    <nav class="site-nav compact-nav member-nav">
+      <a class="brand" href="/">Kinger Matrimonials</a>
+      <div class="nav-links">
+        <a href="/member/dashboard?token=<%= token %>">My Dashboard</a>
+        <a href="/profiles?token=<%= token %>">Approved Profiles</a>
+      </div>
+    </nav>
+
+    <section class="form-layout">
+      <div class="form-intro">
+        <p class="eyebrow">Member Profile</p>
+        <h1>Edit your approved profile details.</h1>
+        <p>Update the important biodata details members should see when they browse approved profiles.</p>
+      </div>
+
+      <form class="modern-form" id="memberEditForm">
+        <div class="form-grid">
+          <label><span>Full Name</span><input name="fullName" /></label>
+          <label><span>Age</span><input name="age" /></label>
+          <label><span>Height</span><input name="height" /></label>
+          <label><span>Gender</span><input name="gender" /></label>
+          <label><span>Religion</span><input name="religion" /></label>
+          <label><span>Mother Tongue</span><input name="motherTongue" /></label>
+          <label><span>City</span><input name="city" /></label>
+          <label><span>Education</span><input name="education" /></label>
+          <label><span>Occupation</span><input name="occupation" /></label>
+          <label><span>Income</span><input name="income" /></label>
+          <label><span>Marital Status</span><input name="maritalStatus" /></label>
+          <label><span>Family Type</span><input name="familyType" /></label>
+          <label><span>Phone</span><input name="phone" /></label>
+          <label><span>WhatsApp Number</span><input name="whatsappNumber" /></label>
+          <label><span>Contact Preference</span><input name="contactPreference" /></label>
+        </div>
+        <div class="form-stack">
+          <label>
+            <span>Partner Requirements</span>
+            <textarea name="requirements"></textarea>
+          </label>
+          <p id="memberEditMessage" class="muted-text"></p>
+        </div>
+        <div class="hero-actions">
+          <button type="submit" class="primary-button">Save Changes</button>
+          <a href="/member/dashboard?token=<%= token %>" class="secondary-button">Back to Dashboard</a>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    const memberToken = "<%= token %>";
+    const form = document.getElementById("memberEditForm");
+    const message = document.getElementById("memberEditMessage");
+
+    async function loadMember() {
+      const res = await fetch("/api/member/me", {
+        headers: { Authorization: "Bearer " + memberToken },
+      });
+      const data = await res.json();
+      if (!res.ok) return;
+      Object.entries(data.member).forEach(([key, value]) => {
+        if (form.elements[key] && typeof value === "string") {
+          form.elements[key].value = value;
+        }
+      });
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const res = await fetch("/api/member/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + memberToken,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      message.innerText = data.message || data.error || "Update failed";
+    });
+
+    loadMember();
+  </script>
+</body>
+</html>

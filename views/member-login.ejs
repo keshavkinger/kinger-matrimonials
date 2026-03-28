@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Login | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-shell">
+  <div class="auth-shell">
+    <section class="auth-copy">
+      <p class="eyebrow">Member Access</p>
+      <h1>Sign in to view approved matrimonial profiles.</h1>
+      <p>Use the same email you submitted with, along with the password you set after approval.</p>
+    </section>
+
+    <section class="login-box elevated-card">
+      <h2>Member Login</h2>
+      <p class="muted-text">Approved members can sign in anytime.</p>
+
+      <input id="email" type="email" placeholder="Email address" />
+      <input id="password" type="password" placeholder="Password" />
+      <p id="memberLoginMessage" class="muted-text"></p>
+
+      <button onclick="memberLogin()" class="primary-button full-width">Login</button>
+    </section>
+  </div>
+
+  <script>
+    const savedToken = localStorage.getItem("memberToken");
+    if (savedToken) {
+      window.location.href = "/member/dashboard?token=" + savedToken;
+    }
+
+    async function memberLogin() {
+      const message = document.getElementById("memberLoginMessage");
+      message.innerText = "";
+
+      const res = await fetch("/api/member/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("memberToken", data.token);
+        window.location.href = "/member/dashboard?token=" + data.token;
+        return;
+      }
+
+      message.innerText = data.error || "Login failed";
+    }
+  </script>
+</body>
+</html>

@@ -1,56 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
+<body class="theme-shell">
+  <div class="dashboard-shell">
+    <header class="dashboard-header elevated-card">
+      <div>
+        <p class="eyebrow">Admin Dashboard</p>
+        <h1>Matrimonial submissions</h1>
+        <p class="muted-text">Review incoming profiles, update statuses, and keep the listing quality high.</p>
+      </div>
+      <div class="hero-actions">
+        <a href="/" class="secondary-button">View Site</a>
+        <button onclick="logout()" class="ghost-button">Logout</button>
+      </div>
+    </header>
 
-  <div class="dashboard">
+    <section class="filters elevated-card">
+      <div class="filter-grid">
+        <input type="text" id="search" placeholder="Search name or city" />
+        <input type="number" id="minAge" placeholder="Min Age" />
+        <input type="number" id="maxAge" placeholder="Max Age" />
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button onclick="applyFilters()" class="primary-button">Apply Filters</button>
+        <button onclick="clearFilters()" class="secondary-button">Clear</button>
+      </div>
+    </section>
 
-    <h1>📋 Matrimonial Submissions</h1>
+    <section class="analytics-grid">
+      <article class="stat-card"><span class="stat-label">Total</span><strong id="statTotal">0</strong></article>
+      <article class="stat-card"><span class="stat-label">Approved</span><strong id="statApproved">0</strong></article>
+      <article class="stat-card"><span class="stat-label">Pending</span><strong id="statPending">0</strong></article>
+      <article class="stat-card"><span class="stat-label">Rejected</span><strong id="statRejected">0</strong></article>
+      <article class="stat-card"><span class="stat-label">Active Members</span><strong id="statMembers">0</strong></article>
+      <article class="stat-card"><span class="stat-label">Interests</span><strong id="statInterests">0</strong></article>
+      <article class="stat-card"><span class="stat-label">Reveal Requests</span><strong id="statReveals">0</strong></article>
+    </section>
 
-    <div class="top-bar">
-      <button onclick="logout()">Logout</button>
-    </div>
+    <section class="dashboard-table elevated-card">
+      <div class="table-meta">
+        <h2>Submission Queue</h2>
+        <span id="pageInfo" class="status-pill neutral"></span>
+      </div>
 
-    <!-- 🔍 SEARCH + FILTER BAR -->
-    <div class="filters">
-      <input type="text" id="search" placeholder="Search name or city" />
-      <input type="number" id="minAge" placeholder="Min Age" />
-      <input type="number" id="maxAge" placeholder="Max Age" />
-      <button onclick="applyFilters()">Apply</button>
-      <button onclick="clearFilters()">Clear</button>
-    </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Details</th>
+              <th>Preferences</th>
+              <th>Photos</th>
+              <th>Biodata</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="table"></tbody>
+        </table>
+      </div>
 
-    <!-- 📋 TABLE -->
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Age</th>
-          <th>City</th>
-          <th>Photo</th>
-          <th>Biodata</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="table"></tbody>
-    </table>
-
-    <!-- ⏩ PAGINATION -->
-    <div class="pagination">
-      <button onclick="prevPage()">⬅ Prev</button>
-      <span id="pageInfo"></span>
-      <button onclick="nextPage()">Next ➡</button>
-    </div>
-
+      <div class="pagination">
+        <button onclick="prevPage()" class="secondary-button">Prev</button>
+        <button onclick="nextPage()" class="primary-button">Next</button>
+      </div>
+    </section>
   </div>
 
   <script>
     let currentPage = 1;
     let totalPages = 1;
+    let activeQuery = "";
 
     async function loadData(query = "", page = 1) {
       const token = localStorage.getItem("token");
@@ -78,20 +112,79 @@
       const table = document.getElementById("table");
       table.innerHTML = "";
 
+      if (!result.submissions.length) {
+        table.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="table-empty">
+                <h3>No submissions found</h3>
+                <p>Try adjusting your search or filters.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+
       result.submissions.forEach((s) => {
         const row = document.createElement("tr");
+        const status = s.status || "Pending";
+        const badgeClass = status.toLowerCase();
+        const whatsappNumber = (s.whatsappNumber || "").replace(/[^0-9]/g, "");
+        const whatsappText = encodeURIComponent(
+          `Hello ${s.fullName}, this is Kinger Matrimonials. We are contacting you regarding your approved profile.`
+        );
+        const whatsappLink = whatsappNumber
+          ? `https://wa.me/${whatsappNumber}?text=${whatsappText}`
+          : "";
+        const photoList = Array.isArray(s.photos) && s.photos.length ? s.photos : [s.photo].filter(Boolean);
+        const photoThumbs = photoList
+          .slice(0, 3)
+          .map((photo) => `<img src="/${photo}" class="tiny-photo" alt="${s.fullName}" />`)
+          .join("");
 
         row.innerHTML = `
-          <td>${s.fullName}</td>
-          <td>${s.age}</td>
-          <td>${s.city}</td>
-          <td><img src="/${s.photo}" width="80"/></td>
-          <td><a href="/${s.biodata}" target="_blank">Download</a></td>
-          <td>${s.status || "Pending"}</td>
           <td>
-            <button onclick="approve('${s._id}')">Approve</button>
-            <button onclick="reject('${s._id}')">Reject</button>
-            <button onclick="deleteEntry('${s._id}')">Delete</button>
+            <div class="name-cell">
+              <strong>${s.fullName}</strong>
+              <span>${s.email || "No email"}</span>
+            </div>
+          </td>
+          <td>
+            ${s.age} years · ${s.height || "Height not added"}<br/>
+            ${s.gender} · ${s.city}<br/>
+            ${s.religion} · ${s.motherTongue || "Language not added"}<br/>
+            <strong>Education:</strong> ${s.education || "Not added"}<br/>
+            <strong>Occupation:</strong> ${s.occupation || "Not added"}<br/>
+            <strong>Income:</strong> ${s.income || "Not added"}<br/>
+            <strong>Marital Status:</strong> ${s.maritalStatus || "Not added"}<br/>
+            <strong>Family:</strong> ${s.familyType || "Not added"}<br/>
+            <strong>Contact:</strong> ${s.phone || "Not added"}<br/>
+            <strong>WhatsApp:</strong> ${s.whatsappNumber || "Not added"}<br/>
+            <strong>Preference:</strong> ${s.contactPreference || "Not added"}<br/>
+            <strong>Activated:</strong> ${s.memberActivatedAt ? "Yes" : "No"}
+          </td>
+          <td>
+            ${s.requirements ? s.requirements : "No requirements added"}<br/><br/>
+            <strong>Interests:</strong> ${s.interestRequests?.length || 0}<br/>
+            <strong>Contact Reveals:</strong> ${s.contactRevealRequests?.length || 0}
+          </td>
+          <td>
+            <div class="photo-stack">
+              <img src="/${s.photo}" width="80" height="96" class="table-photo" />
+              <span>${photoList.length} photo${photoList.length === 1 ? "" : "s"}</span>
+              <div class="tiny-photo-strip">${photoThumbs}</div>
+            </div>
+          </td>
+          <td><a href="/${s.biodata}" target="_blank" class="text-link">Open PDF</a></td>
+          <td><span class="status-pill ${badgeClass}">${status}</span></td>
+          <td>
+            <div class="table-actions">
+              <button onclick="approve('${s._id}')" class="tiny-button success">Approve</button>
+              <button onclick="reject('${s._id}')" class="tiny-button warning">Reject</button>
+              ${whatsappLink ? `<a href="${whatsappLink}" target="_blank" class="tiny-button neutral-link">WhatsApp</a>` : ""}
+              ${s.phone ? `<a href="tel:${s.phone}" class="tiny-button neutral-link">Call</a>` : ""}
+              <button onclick="deleteEntry('${s._id}')" class="tiny-button danger">Delete</button>
+            </div>
           </td>
         `;
 
@@ -100,8 +193,28 @@
 
       currentPage = result.page;
       totalPages = result.pages;
+      activeQuery = query;
       document.getElementById("pageInfo").innerText =
         `Page ${currentPage} of ${totalPages}`;
+    }
+
+    async function loadStats() {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("/api/submissions/stats", {
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      if (!res.ok) return;
+
+      const stats = await res.json();
+      document.getElementById("statTotal").innerText = stats.total;
+      document.getElementById("statApproved").innerText = stats.approved;
+      document.getElementById("statPending").innerText = stats.pending;
+      document.getElementById("statRejected").innerText = stats.rejected;
+      document.getElementById("statMembers").innerText = stats.activeMembers;
+      document.getElementById("statInterests").innerText = stats.totalInterests;
+      document.getElementById("statReveals").innerText = stats.contactRequests;
     }
 
     // ✅ APPROVE
@@ -113,7 +226,7 @@
         headers: { Authorization: "Bearer " + token },
       });
 
-      loadData("", currentPage);
+      loadData(activeQuery, currentPage);
     }
 
     // ❌ REJECT
@@ -125,7 +238,7 @@
         headers: { Authorization: "Bearer " + token },
       });
 
-      loadData("", currentPage);
+      loadData(activeQuery, currentPage);
     }
 
     // 🗑 DELETE
@@ -139,7 +252,7 @@
         headers: { Authorization: "Bearer " + token },
       });
 
-      loadData("", currentPage);
+      loadData(activeQuery, currentPage);
     }
 
     // 🔍 FILTERS
@@ -147,31 +260,34 @@
       const search = document.getElementById("search").value;
       const minAge = document.getElementById("minAge").value;
       const maxAge = document.getElementById("maxAge").value;
+      const status = document.getElementById("statusFilter").value;
 
-      let query = "";
-      if (search) query += `search=${search}&`;
-      if (minAge) query += `minAge=${minAge}&`;
-      if (maxAge) query += `maxAge=${maxAge}`;
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (minAge) params.set("minAge", minAge);
+      if (maxAge) params.set("maxAge", maxAge);
+      if (status) params.set("status", status);
 
       currentPage = 1;
-      loadData(query, currentPage);
+      loadData(params.toString(), currentPage);
     }
 
     function clearFilters() {
       document.getElementById("search").value = "";
       document.getElementById("minAge").value = "";
       document.getElementById("maxAge").value = "";
+      document.getElementById("statusFilter").value = "";
       currentPage = 1;
       loadData();
     }
 
     // ⏩ PAGINATION
     function nextPage() {
-      if (currentPage < totalPages) loadData("", currentPage + 1);
+      if (currentPage < totalPages) loadData(activeQuery, currentPage + 1);
     }
 
     function prevPage() {
-      if (currentPage > 1) loadData("", currentPage - 1);
+      if (currentPage > 1) loadData(activeQuery, currentPage - 1);
     }
 
     // 🚪 LOGOUT
@@ -182,6 +298,7 @@
 
     // initial load
     loadData();
+    loadStats();
   </script>
 
 </body>

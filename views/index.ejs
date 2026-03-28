@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="theme-shell">
+  <header class="hero">
+    <nav class="site-nav">
+      <a class="brand" href="/">Kinger Matrimonials</a>
+      <div class="nav-links">
+        <a href="/gun-milan">Gun Milan</a>
+        <a href="/admin/login">Admin Login</a>
+        <a href="/member/login">Member Login</a>
+        <a href="/submit" class="nav-button">Submit Biodata</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid">
+      <section class="hero-copy">
+        <p class="eyebrow">Trusted Matrimonial Support</p>
+        <h1>Warm introductions, verified details, and a more graceful way to find the right match.</h1>
+        <p class="hero-text">
+          Kinger Matrimonials helps families and individuals submit biodata, review serious profiles,
+          and stay connected through a simple, respectful process.
+        </p>
+        <div class="hero-actions">
+          <a href="/submit" class="primary-button">Start Your Profile</a>
+          <a href="/gun-milan" class="secondary-button">Check Gun Milan</a>
+          <a href="/admin/login" class="secondary-button">Admin Login</a>
+        </div>
+      </section>
+
+      <aside class="hero-panel">
+        <div class="stat-card">
+          <span class="stat-label">Approved Profiles</span>
+          <strong><%= approvedCount %></strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pending Reviews</span>
+          <strong><%= pendingCount %></strong>
+        </div>
+        <div class="highlight-card">
+          <p class="highlight-title">Private and reviewed</p>
+          <ul class="feature-list">
+            <li>Structured biodata submissions</li>
+            <li>Admin review before approvals go live</li>
+            <li>Member login enabled only after approval</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <main class="content-shell">
+    <section class="section-grid">
+      <article class="info-card">
+        <p class="section-kicker">How it works</p>
+        <h2>Three simple steps, handled with care</h2>
+        <div class="process-list">
+          <div>
+            <span>01</span>
+            <h3>Submit your biodata</h3>
+            <p>Share your details, photo, and biodata PDF in one guided form.</p>
+          </div>
+          <div>
+            <span>02</span>
+            <h3>Get reviewed</h3>
+            <p>Each submission is checked by the admin team before approval.</p>
+          </div>
+          <div>
+            <span>03</span>
+            <h3>Stay updated</h3>
+            <p>You receive email confirmation when your profile is approved.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="info-card accent-card">
+        <p class="section-kicker">For families and candidates</p>
+        <h2>Clear profiles, simple communication, and a softer first impression.</h2>
+        <p>
+          This platform is designed to reduce friction: less chasing, fewer missing documents,
+          and a cleaner review process for everyone involved.
+        </p>
+      </article>
+    </section>
+
+    <section class="recent-section">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Private discovery</p>
+          <h2>Approved profiles are shared only with approved members</h2>
+        </div>
+      </div>
+
+      <div class="empty-card">
+        <h3>Private member browsing only</h3>
+        <p>Approved profile names, photos, and biodata are not shown publicly. Once your own profile is approved, we send a password setup email so you can log in privately.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

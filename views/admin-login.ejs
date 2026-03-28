@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
+<body class="theme-shell">
+  <div class="auth-shell">
+    <section class="auth-copy">
+      <p class="eyebrow">Admin Access</p>
+      <h1>Review submissions with a cleaner workflow.</h1>
+      <p>Sign in to approve profiles, reject entries, manage files, and keep the platform updated.</p>
+    </section>
 
-  <div class="login-box">
-    <h1>Admin Login</h1>
+    <section class="login-box elevated-card">
+      <h2>Admin Login</h2>
+      <p class="muted-text">Use your admin credentials to continue.</p>
 
-    <input id="username" placeholder="Username" />
-    <input id="password" type="password" placeholder="Password" />
+      <input id="username" placeholder="Username" />
+      <input id="password" type="password" placeholder="Password" />
 
-    <button onclick="login()">Login</button>
+      <button onclick="login()" class="primary-button full-width">Login</button>
+    </section>
   </div>
 
 <script>

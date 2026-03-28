@@ -1,27 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Kinger Matrimonials – Submit Biodata</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Biodata | Kinger Matrimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
-  <h1>Submit Your Biodata</h1>
+<body class="theme-shell">
+  <div class="page-shell">
+    <nav class="site-nav compact-nav">
+      <a class="brand" href="/">Kinger Matrimonials</a>
+      <div class="nav-links">
+        <a href="/gun-milan">Gun Milan</a>
+        <a href="/admin/login">Admin</a>
+      </div>
+    </nav>
 
-  <form action="/api/submit" method="POST" enctype="multipart/form-data">
-    <input name="fullName" placeholder="Full Name" required />
-    <input name="age" type="number" required />
-    <input name="gender" placeholder="Gender" required />
-    <input name="religion" placeholder="Religion" required />
-    <input name="city" placeholder="City" required />
-<input name="email" placeholder="Email" required />
+    <section class="form-layout">
+      <div class="form-intro">
+        <p class="eyebrow">Profile Submission</p>
+        <h1>Share your biodata with confidence.</h1>
+        <p>
+          Fill in your profile details, upload a recent photo, and attach your biodata PDF.
+          Once reviewed, the team can approve your submission and notify you by email.
+        </p>
+        <div class="mini-points">
+          <div>
+            <strong>Quick review</strong>
+            <span>Admin checks every profile before approval.</span>
+          </div>
+          <div>
+            <strong>Private access</strong>
+            <span>You get a password setup email only after your own profile is approved.</span>
+          </div>
+        </div>
+      </div>
 
-    <label>Photo:</label>
-    <input type="file" name="photo" required />
+      <form class="modern-form" action="/api/submit" method="POST" enctype="multipart/form-data">
+        <div class="form-grid">
+          <label>
+            <span>Full Name</span>
+            <input name="fullName" placeholder="Enter full name" required />
+          </label>
 
-    <label>Biodata PDF:</label>
-    <input type="file" name="biodata" required />
+          <label>
+            <span>Email</span>
+            <input name="email" type="email" placeholder="Enter email address" required />
+          </label>
 
-    <button type="submit">Submit</button>
-  </form>
+          <label>
+            <span>Age</span>
+            <input name="age" type="number" min="18" placeholder="Enter age" required />
+          </label>
+
+          <label>
+            <span>Height</span>
+            <input name="height" placeholder="Example: 5'8&quot;" required />
+          </label>
+
+          <label>
+            <span>Gender</span>
+            <input name="gender" placeholder="Enter gender" required />
+          </label>
+
+          <label>
+            <span>Religion</span>
+            <input name="religion" placeholder="Enter religion" required />
+          </label>
+
+          <label>
+            <span>Mother Tongue</span>
+            <input name="motherTongue" placeholder="Enter mother tongue" required />
+          </label>
+
+          <label>
+            <span>City</span>
+            <input name="city" placeholder="Enter city" required />
+          </label>
+
+          <label>
+            <span>Income</span>
+            <input name="income" placeholder="Enter monthly or annual income" required />
+          </label>
+
+          <label>
+            <span>Education</span>
+            <input name="education" placeholder="Highest qualification" required />
+          </label>
+
+          <label>
+            <span>Occupation</span>
+            <input name="occupation" placeholder="Current occupation" required />
+          </label>
+
+          <label>
+            <span>Marital Status</span>
+            <select name="maritalStatus" required>
+              <option value="">Select marital status</option>
+              <option value="Never Married">Never Married</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Separated">Separated</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Family Type</span>
+            <select name="familyType" required>
+              <option value="">Select family type</option>
+              <option value="Joint Family">Joint Family</option>
+              <option value="Nuclear Family">Nuclear Family</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Phone Number</span>
+            <input name="phone" placeholder="Primary contact number" required />
+          </label>
+
+          <label>
+            <span>WhatsApp Number</span>
+            <input name="whatsappNumber" placeholder="WhatsApp number" required />
+          </label>
+
+          <label>
+            <span>Preferred Contact Mode</span>
+            <select name="contactPreference" required>
+              <option value="">Select contact preference</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Phone Call">Phone Call</option>
+              <option value="Email">Email</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-stack">
+          <label>
+            <span>Partner Requirements</span>
+            <textarea name="requirements" rows="5" placeholder="Describe the kind of partner and family preferences you are looking for" required></textarea>
+          </label>
+        </div>
+
+        <div class="upload-grid">
+          <label class="upload-field">
+            <span>Profile Photos</span>
+            <input type="file" name="photos" accept="image/*" multiple required />
+            <small>Upload up to 5 clear photos. The first one becomes the main display image.</small>
+          </label>
+
+          <label class="upload-field">
+            <span>Biodata PDF</span>
+            <input type="file" name="biodata" accept=".pdf" required />
+            <small>Only PDF biodata files are accepted.</small>
+          </label>
+        </div>
+
+        <button type="submit" class="primary-button full-width">Submit Profile</button>
+      </form>
+    </section>
+  </div>
 </body>
 </html>
