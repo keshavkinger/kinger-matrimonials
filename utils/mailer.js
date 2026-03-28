@@ -55,7 +55,7 @@ const sendApprovalEmail = async (submission, setupLink) => {
       to: submission.email,
       from: process.env.EMAIL_USER,
       subject: "Your Matrimonial Profile Approved 🎉",
-      text: `Your profile is approved. Set your password here: ${setupLink}`,
+      text: `Your profile is approved. Set your password here: ${setupLink} After creating your password, log in at https://www.kingermatrimonials.in/member/login using your email and new password.`,
       html: `
         <div style="margin:0;padding:32px 16px;background:#f8f1e9;font-family:Arial,sans-serif;color:#2a1611;">
           <div style="max-width:640px;margin:0 auto;background:#fffaf4;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(66,29,17,0.12);border:1px solid rgba(200,155,60,0.18);">
@@ -82,13 +82,26 @@ const sendApprovalEmail = async (submission, setupLink) => {
                 </a>
               </div>
 
+              <div style="margin:0 0 24px;padding:18px;border-radius:16px;background:#fff;border:1px solid rgba(143,29,44,0.14);">
+                <p style="margin:0 0 8px;font-size:14px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#8f1d2c;">
+                  After you set your password
+                </p>
+                <p style="margin:0;font-size:15px;line-height:1.7;color:#5f4a41;">
+                  Go to
+                  <a href="https://www.kingermatrimonials.in/member/login" style="color:#8f1d2c;font-weight:bold;text-decoration:none;">
+                    www.kingermatrimonials.in/member/login
+                  </a>
+                  and sign in using your email and new password.
+                </p>
+              </div>
+
               <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#5f4a41;">
                 What happens next:
               </p>
               <ul style="margin:0 0 20px 18px;padding:0;color:#5f4a41;line-height:1.8;">
                 <li>Your profile is already approved in our system.</li>
                 <li>Use the button above to create your password.</li>
-                <li>After setting your password, sign in anytime with your email and password.</li>
+                <li>After setting your password, sign in at www.kingermatrimonials.in/member/login.</li>
               </ul>
 
               <p style="margin:0;font-size:15px;line-height:1.7;color:#5f4a41;">
