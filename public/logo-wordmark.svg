@@ -1,32 +1,26 @@
-<svg width="1200" height="320" viewBox="0 0 1200 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle logoDesc">
-  <title id="logoTitle">Kinger Matrimonials logo</title>
-  <desc id="logoDesc">A refined gold KM monogram with the Kinger Matrimonials wordmark.</desc>
+<svg width="920" height="220" viewBox="0 0 920 220" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Kinger Matrimonials wordmark</title>
+  <desc id="desc">Gold KM monogram followed by the Kinger Matrimonials wordmark on a transparent background.</desc>
   <defs>
-    <linearGradient id="goldFill" x1="108" y1="48" x2="256" y2="228" gradientUnits="userSpaceOnUse">
+    <linearGradient id="goldFill" x1="40" y1="18" x2="180" y2="186" gradientUnits="userSpaceOnUse">
       <stop stop-color="#E7CB81"/>
       <stop offset="0.48" stop-color="#CFA74F"/>
       <stop offset="1" stop-color="#B8892D"/>
     </linearGradient>
   </defs>
 
-  <rect width="1200" height="320" rx="36" fill="#FFFAF4"/>
-
-  <g transform="translate(44 34)">
-    <rect x="0" y="0" width="252" height="252" rx="44" fill="#FFFDF9"/>
-    <path d="M87 199L109 67H140L130 110L187 67H223L159 117L210 199H176L134 134L121 199H87Z" fill="url(#goldFill)"/>
-    <path d="M60 199L95 67H126L108 136L160 92H193L178 116L126 157L114 199H60Z" fill="url(#goldFill)" fill-opacity="0.92"/>
-    <path d="M112 183L144 73H172L154 132L210 183H178L145 152L136 183H112Z" fill="url(#goldFill)" fill-opacity="0.84"/>
+  <g transform="translate(8 10)">
+    <path d="M54 153L74 35H102L94 67L137 35H165L116 72L155 153H128L96 85L84 153H54Z" fill="url(#goldFill)"/>
+    <path d="M30 153L62 35H89L73 98L113 64H141L130 82L90 110L78 153H30Z" fill="url(#goldFill)" fill-opacity="0.92"/>
+    <path d="M76 143L104 41H129L115 95L158 143H133L106 118L99 143H76Z" fill="url(#goldFill)" fill-opacity="0.84"/>
   </g>
 
-  <g transform="translate(336 72)">
-    <text x="0" y="74" fill="#2A1611" font-family="'Cormorant Garamond', Georgia, serif" font-size="86" font-style="italic" font-weight="700" letter-spacing="1.1">
+  <g transform="translate(220 34)">
+    <text x="0" y="58" fill="#FFF7F1" font-family="'Cormorant Garamond', Georgia, serif" font-size="72" font-style="italic" font-weight="700" letter-spacing="1">
       Kinger
     </text>
-    <text x="0" y="156" fill="#B8892D" font-family="'Cormorant Garamond', Georgia, serif" font-size="86" font-style="italic" font-weight="700" letter-spacing="1.1">
+    <text x="0" y="124" fill="#E1BA62" font-family="'Cormorant Garamond', Georgia, serif" font-size="72" font-style="italic" font-weight="700" letter-spacing="1">
       Matrimonials
-    </text>
-    <text x="4" y="206" fill="#7A655B" font-family="'Manrope', Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="5.4">
-      VERIFIED PROFILES. TRUSTED CONNECTIONS.
     </text>
   </g>
 </svg>

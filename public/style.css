@@ -183,10 +183,6 @@ textarea {
   background: rgba(255, 246, 239, 0.92);
 }
 
-.hero .brand-wordmark {
-  filter: brightness(0) invert(1);
-}
-
 .hero .brand,
 .hero .nav-links a {
   color: rgba(255, 246, 239, 0.94);
