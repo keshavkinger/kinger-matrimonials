@@ -164,23 +164,43 @@ textarea {
 }
 
 .brand-mark {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   border-radius: 14px;
   background: rgba(255, 250, 244, 0.94);
-  padding: 6px;
+  padding: 4px;
   box-shadow: 0 10px 24px rgba(66, 29, 17, 0.14);
 }
 
-.brand-wordmark {
-  height: 34px;
-  width: auto;
-  object-fit: contain;
+.brand-title {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
+}
+
+.brand-title strong {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-title span {
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(122, 101, 91, 0.92);
 }
 
 .hero .brand-mark {
   background: rgba(255, 246, 239, 0.92);
+}
+
+.hero .brand-title strong,
+.hero .brand-title span {
+  color: rgba(255, 246, 239, 0.94);
 }
 
 .hero .brand,
@@ -199,8 +219,12 @@ textarea {
   height: 58px;
 }
 
-.auth-brand-wrap .brand-wordmark {
-  height: 36px;
+.auth-brand-wrap .brand-title strong {
+  color: var(--ink);
+}
+
+.auth-brand-wrap .brand-title span {
+  color: var(--muted);
 }
 
 .nav-links {
@@ -1246,6 +1270,15 @@ th {
   }
 
   .brand-wordmark {
-    height: 28px;
+    display: none;
+  }
+
+  .brand-title strong {
+    font-size: 1.5rem;
+  }
+
+  .brand-title span {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
   }
 }
