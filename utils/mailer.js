@@ -6,6 +6,12 @@ if (process.env.SENDGRID_API_KEY) {
 }
 
 let smtpTransporter;
+const RETRYABLE_MAIL_ERROR_CODES = new Set([
+  "ECONNECTION",
+  "ENETUNREACH",
+  "ESOCKET",
+  "ETIMEDOUT",
+]);
 
 function getMailFrom() {
   return process.env.EMAIL_FROM || process.env.EMAIL_USER;
@@ -22,6 +28,9 @@ function getSmtpTransporter() {
       port: Number(process.env.SMTP_PORT || 587),
       secure: process.env.SMTP_SECURE === "true",
       family: 4,
+      connectionTimeout: 30000,
+      greetingTimeout: 30000,
+      socketTimeout: 60000,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
@@ -32,6 +41,14 @@ function getSmtpTransporter() {
   return smtpTransporter;
 }
 
+function shouldRetryMail(error) {
+  return RETRYABLE_MAIL_ERROR_CODES.has(error.code);
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function sendMail(message) {
   const mail = {
     ...message,
@@ -39,9 +56,22 @@ async function sendMail(message) {
   };
 
   if (process.env.MAIL_PROVIDER === "smtp" || process.env.SMTP_HOST) {
-    console.log(`📧 SMTP: Sending mail via ${process.env.SMTP_HOST}`);
-    await getSmtpTransporter().sendMail(mail);
-    return;
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      try {
+        console.log(`📧 SMTP: Sending mail via ${process.env.SMTP_HOST} (attempt ${attempt})`);
+        await getSmtpTransporter().sendMail(mail);
+        return;
+      } catch (error) {
+        smtpTransporter = null;
+
+        if (attempt === 3 || !shouldRetryMail(error)) {
+          throw error;
+        }
+
+        console.error(`❌ SMTP attempt ${attempt} failed:`, error.message);
+        await wait(attempt * 2000);
+      }
+    }
   }
 
   if (!process.env.SENDGRID_API_KEY) {
@@ -90,6 +120,7 @@ const sendNewSubmissionEmail = async (submission) => {
     console.log("📧 New submission email sent");
   } catch (error) {
     logSendGridError("❌ Mail error:", error);
+    throw error;
   }
 };
 
@@ -162,6 +193,7 @@ const sendApprovalEmail = async (submission, setupLink) => {
     console.log("📧 Approval email sent");
   } catch (error) {
     logSendGridError("❌ Approval mail error:", error);
+    throw error;
   }
 };
 
