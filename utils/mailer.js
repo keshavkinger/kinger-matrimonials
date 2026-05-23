@@ -1,5 +1,8 @@
 const sgMail = require("@sendgrid/mail");
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+dns.setDefaultResultOrder?.("ipv4first");
 
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -28,6 +31,9 @@ function getSmtpTransporter() {
       port: Number(process.env.SMTP_PORT || 587),
       secure: process.env.SMTP_SECURE === "true",
       family: 4,
+      lookup: (hostname, options, callback) => {
+        dns.lookup(hostname, { ...options, family: 4, all: false }, callback);
+      },
       connectionTimeout: 30000,
       greetingTimeout: 30000,
       socketTimeout: 60000,
