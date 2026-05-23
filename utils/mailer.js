@@ -1,6 +1,7 @@
 const sgMail = require("@sendgrid/mail");
 const nodemailer = require("nodemailer");
 const dns = require("dns");
+const dnsPromises = require("dns").promises;
 
 dns.setDefaultResultOrder?.("ipv4first");
 
@@ -9,6 +10,7 @@ if (process.env.SENDGRID_API_KEY) {
 }
 
 let smtpTransporter;
+let smtpResolvedHost;
 const RETRYABLE_MAIL_ERROR_CODES = new Set([
   "ECONNECTION",
   "ENETUNREACH",
@@ -24,10 +26,26 @@ function getAdminEmail() {
   return process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
 }
 
-function getSmtpTransporter() {
+async function getSmtpHost() {
+  if (process.env.SMTP_IPV4) {
+    return process.env.SMTP_IPV4;
+  }
+
+  if (!smtpResolvedHost) {
+    const addresses = await dnsPromises.resolve4(process.env.SMTP_HOST);
+    smtpResolvedHost = addresses[0];
+  }
+
+  return smtpResolvedHost;
+}
+
+async function getSmtpTransporter() {
   if (!smtpTransporter) {
+    const smtpHost = process.env.SMTP_HOST;
+    const resolvedHost = await getSmtpHost();
+
     smtpTransporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host: resolvedHost,
       port: Number(process.env.SMTP_PORT || 587),
       secure: process.env.SMTP_SECURE === "true",
       family: 4,
@@ -37,6 +55,9 @@ function getSmtpTransporter() {
       connectionTimeout: 30000,
       greetingTimeout: 30000,
       socketTimeout: 60000,
+      tls: {
+        servername: smtpHost,
+      },
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
@@ -65,7 +86,8 @@ async function sendMail(message) {
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       try {
         console.log(`📧 SMTP: Sending mail via ${process.env.SMTP_HOST} (attempt ${attempt})`);
-        await getSmtpTransporter().sendMail(mail);
+        const transporter = await getSmtpTransporter();
+        await transporter.sendMail(mail);
         return;
       } catch (error) {
         smtpTransporter = null;
