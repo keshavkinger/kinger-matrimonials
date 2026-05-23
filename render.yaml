@@ -13,5 +13,21 @@ services:
         sync: false
       - key: EMAIL_USER
         sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: MAIL_PROVIDER
+        value: smtp
       - key: SENDGRID_API_KEY
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
         sync: false

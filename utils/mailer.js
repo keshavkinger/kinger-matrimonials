@@ -1,7 +1,53 @@
 const sgMail = require("@sendgrid/mail");
+const nodemailer = require("nodemailer");
 
-// ✅ Set API Key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
+
+let smtpTransporter;
+
+function getMailFrom() {
+  return process.env.EMAIL_FROM || process.env.EMAIL_USER;
+}
+
+function getAdminEmail() {
+  return process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+}
+
+function getSmtpTransporter() {
+  if (!smtpTransporter) {
+    smtpTransporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: process.env.SMTP_SECURE === "true",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  }
+
+  return smtpTransporter;
+}
+
+async function sendMail(message) {
+  const mail = {
+    ...message,
+    from: message.from || getMailFrom(),
+  };
+
+  if (process.env.MAIL_PROVIDER === "smtp" || process.env.SMTP_HOST) {
+    await getSmtpTransporter().sendMail(mail);
+    return;
+  }
+
+  if (!process.env.SENDGRID_API_KEY) {
+    throw new Error("No mail provider configured. Set SENDGRID_API_KEY or SMTP_* env vars.");
+  }
+
+  await sgMail.send(mail);
+}
 
 function logSendGridError(prefix, error) {
   console.error(prefix, error.message);
@@ -17,11 +63,10 @@ function logSendGridError(prefix, error) {
 // 📧 Email when new submission arrives
 const sendNewSubmissionEmail = async (submission) => {
   try {
-    console.log(`📨 Sending new submission email to ${process.env.EMAIL_USER}`);
+    console.log(`📨 Sending new submission email to ${getAdminEmail()}`);
 
-    await sgMail.send({
-      to: process.env.EMAIL_USER, // admin email
-      from: process.env.EMAIL_USER, // must be verified sender
+    await sendMail({
+      to: getAdminEmail(), // admin email
       subject: "New Matrimonial Submission",
       text: `New profile submitted by ${submission.fullName}. Age: ${submission.age}. City: ${submission.city}. Status: Pending Approval.`,
       html: `
@@ -51,9 +96,8 @@ const sendApprovalEmail = async (submission, setupLink) => {
   try {
     console.log(`📨 Sending approval email to ${submission.email}`);
 
-    await sgMail.send({
+    await sendMail({
       to: submission.email,
-      from: process.env.EMAIL_USER,
       subject: "Your Matrimonial Profile Approved 🎉",
       text: `Your profile is approved. Set your password here: ${setupLink} After creating your password, log in at https://www.kingermatrimonials.in/member/login using your email and new password.`,
       html: `
