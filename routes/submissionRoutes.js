@@ -7,7 +7,7 @@ const verifyAdmin = require("../middleware/auth");
 
 // 📧 Email utility
 //const sendNewSubmissionEmail = require("../utils/mailer");
-const { sendNewSubmissionEmail, sendApprovalEmail } = require("../utils/mailer");
+const { sendNewSubmissionEmail, sendApprovalEmail, sendAdminTestEmail } = require("../utils/mailer");
 
 
 // ---------------- MULTER STORAGE ----------------
@@ -115,6 +115,16 @@ router.get("/submissions/stats", verifyAdmin, async (req, res) => {
     res.json(stats);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+router.post("/mail/test-admin", verifyAdmin, async (req, res) => {
+  try {
+    await sendAdminTestEmail();
+    res.json({ message: "Test email sent" });
+  } catch (err) {
+    console.error("Admin test email failed:", err.message);
+    res.status(500).json({ error: err.message || "Test email failed" });
   }
 });
 

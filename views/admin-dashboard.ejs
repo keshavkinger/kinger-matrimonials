@@ -19,6 +19,8 @@
         <p class="muted-text">Review incoming profiles, update statuses, and keep the listing quality high.</p>
       </div>
       <div class="hero-actions">
+        <button onclick="sendTestEmail()" class="primary-button">Test Email</button>
+        <span id="mailTestStatus" class="muted-text"></span>
         <a href="/" class="secondary-button">View Site</a>
         <button onclick="logout()" class="ghost-button">Logout</button>
       </div>
@@ -216,6 +218,30 @@
       document.getElementById("statMembers").innerText = stats.activeMembers;
       document.getElementById("statInterests").innerText = stats.totalInterests;
       document.getElementById("statReveals").innerText = stats.contactRequests;
+    }
+
+    async function sendTestEmail() {
+      const token = localStorage.getItem("token");
+      const status = document.getElementById("mailTestStatus");
+      status.innerText = "Sending...";
+
+      try {
+        const res = await fetch("/api/mail/test-admin", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+          status.innerText = result.error || "Failed";
+          return;
+        }
+
+        status.innerText = "Sent";
+      } catch (err) {
+        status.innerText = "Failed";
+      }
     }
 
     // ✅ APPROVE

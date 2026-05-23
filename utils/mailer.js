@@ -203,7 +203,30 @@ const sendApprovalEmail = async (submission, setupLink) => {
   }
 };
 
+const sendAdminTestEmail = async () => {
+  try {
+    console.log(`📨 Sending admin test email to ${getAdminEmail()}`);
+
+    await sendMail({
+      to: getAdminEmail(),
+      subject: "Kinger Matrimonials test email",
+      text: "This is a test email from Kinger Matrimonials. If you received this, admin email is working.",
+      html: `
+        <h2>Kinger Matrimonials test email</h2>
+        <p>This is a test email from Kinger Matrimonials.</p>
+        <p>If you received this, admin email is working.</p>
+      `,
+    });
+
+    console.log("📧 Admin test email sent");
+  } catch (error) {
+    logSendGridError("❌ Admin test mail error:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   sendNewSubmissionEmail,
   sendApprovalEmail,
+  sendAdminTestEmail,
 };
