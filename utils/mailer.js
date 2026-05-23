@@ -23,7 +23,7 @@ function getSmtpTransporter() {
       secure: process.env.SMTP_SECURE === "true",
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
     });
   }
@@ -38,6 +38,7 @@ async function sendMail(message) {
   };
 
   if (process.env.MAIL_PROVIDER === "smtp" || process.env.SMTP_HOST) {
+    console.log(`📧 SMTP: Sending mail via ${process.env.SMTP_HOST}`);
     await getSmtpTransporter().sendMail(mail);
     return;
   }
@@ -85,9 +86,9 @@ const sendNewSubmissionEmail = async (submission) => {
       `,
     });
 
-    console.log("📧 SendGrid: New submission email sent");
+    console.log("📧 New submission email sent");
   } catch (error) {
-    logSendGridError("❌ SendGrid error:", error);
+    logSendGridError("❌ Mail error:", error);
   }
 };
 
@@ -157,9 +158,9 @@ const sendApprovalEmail = async (submission, setupLink) => {
       `,
     });
 
-    console.log("📧 SendGrid: Approval email sent");
+    console.log("📧 Approval email sent");
   } catch (error) {
-    logSendGridError("❌ SendGrid approval error:", error);
+    logSendGridError("❌ Approval mail error:", error);
   }
 };
 
